@@ -4,6 +4,8 @@ const User = require('../modules/User');
 //For Validating User Inputs
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const jwtSecret = "Welcome$";
 
 
 //post request for signup new users.
@@ -41,8 +43,49 @@ router.post('/signup',
           password: hashedPassword
         })
       user.save();
-      res.send('Signup Successfull!')
+      const payLoad = {
+        user:{
+          id: user._id
+        }
+      }
+      const authToken = jwt.sign(payLoad,jwtSecret);
+      res.json({authToken})
     console.log(req.body)
+    }
+  }
+)
+router.post('/login',
+  //Adding Validations
+  [
+    body('email').trim().isEmail().withMessage('Please Enter A Valid Email Address!'),
+    body('password').exists().withMessage('Password Cannot Be Empty!')
+  ],
+  async (req, res) => {
+    const error = await validationResult(req);
+    //Checking whether there is any validation error
+    if (!error.isEmpty()) {
+      return res.status(400).json({ errors: error.array() })
+    }
+    try {
+    const user = await User.findOne({email: req.body.email});
+    if(!user){
+     return res.status(400).json({ error: "Please Enter Valid Credentials" })
+    }
+    const comparisonResult =await bcrypt.compare(req.body.password,user.password);
+    if(!comparisonResult){
+       return res.status(400).json({ error: "Please Enter Valid Credentials" })
+    }
+    const payLoad = {
+      user:{
+        id: user._id
+      }
+    }
+    const authToken = jwt.sign(payLoad,jwtSecret);
+    res.json({authToken})
+  }
+     catch (error) {
+      console.error(error)
+      res.status(500).send("Internal Server Error")
     }
   }
 )
