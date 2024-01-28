@@ -73,6 +73,32 @@ router.put('/updatenote/:id', fetchuser, async (req, res) => {
     }
 });
 
+// Route 3: Update Note
+router.delete('/deletenote/:id', fetchuser, async (req, res) => {
+
+    try {
+        const noteToBeUpdated = await Notes.findById(req.params.id);
+
+        if (!noteToBeUpdated) {
+            return res.status(404).send("Note Not Found");
+        }
+
+        // Check if the user owns the note
+        if (noteToBeUpdated.user.toString() !== req.user.id) {
+            return res.status(401).send("Unauthorized");
+        }
+
+        const deletedNote = await Notes.findByIdAndDelete(
+            req.params.id
+        );
+
+        res.json(deletedNote);
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 
 module.exports = router
