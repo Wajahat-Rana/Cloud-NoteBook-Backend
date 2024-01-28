@@ -6,7 +6,7 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const jwtSecret = "Welcome$";
-
+const fetchUser = require("../middleware/fetchUser");
 
 //post request for signup new users.
 router.post('/signup',
@@ -54,6 +54,8 @@ router.post('/signup',
     }
   }
 )
+//post request for login existing users.
+
 router.post('/login',
   //Adding Validations
   [
@@ -89,5 +91,17 @@ router.post('/login',
     }
   }
 )
+
+//post request to get data of logged In user.
+router.post('/getuser',fetchUser,async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user =await User.findById(userId).select("-password");
+    res.status(200).json(user);
+    } catch (error) {
+    console.error(error);
+    res.status(401).send({error:"Please Enter A Valid Auth Token"})
+  }
+})
 
 module.exports = router;
