@@ -8,6 +8,8 @@ connectDB();
 
 //Linking Route /api/auth with auth route in auth.js file.
 app.use('/api/auth',require('./routes/auth'));
+app.use('/api/notes',require('./routes/note'));
+
 
 //Runnign App on Port 3000
 app.listen(3000,()=>{
