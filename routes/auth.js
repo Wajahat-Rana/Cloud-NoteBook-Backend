@@ -71,19 +71,22 @@ router.post('/login',
     try {
     const user = await User.findOne({email: req.body.email});
     if(!user){
-     return res.status(400).json({ error: "Please Enter Valid Credentials" })
+      const success = false;
+     return res.status(400).json({success, error: "Please Enter Valid Credentials" })
     }
     const comparisonResult =await bcrypt.compare(req.body.password,user.password);
     if(!comparisonResult){
-       return res.status(400).json({ error: "Please Enter Valid Credentials" })
+      const success = false;
+       return res.status(400).json({ success,error: "Please Enter Valid Credentials" })
     }
     const payLoad = {
       user:{
         id: user._id
       }
     }
+    const success = true
     const authToken = jwt.sign(payLoad,jwtSecret);
-    res.json({authToken})
+    res.json({success,authToken})
   }
      catch (error) {
       console.error(error)
