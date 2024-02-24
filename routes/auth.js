@@ -27,10 +27,12 @@ router.post('/signup',
     const checkUserUserName = await User.findOne({ username: req.body.username })
 
     if (checkUserEmail) {
-      return res.status(400).json("Email already exists!")
+      const success = false;
+      return res.status(400).json({success,error:"Email already exists!"})
     }
     else if (checkUserUserName) {
-      return res.status(400).json("Username is not Available!")
+      const success = false;
+      return res.status(400).json({success,error:"Username is not Available!"})
     }
     //Creating new user in database
     else {
@@ -49,7 +51,8 @@ router.post('/signup',
         }
       }
       const authToken = jwt.sign(payLoad,jwtSecret);
-      res.json({authToken})
+      const success = true;
+      res.json({success,authToken})
     console.log(req.body)
     }
   }
