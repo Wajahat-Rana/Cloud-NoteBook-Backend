@@ -80,7 +80,7 @@ router.post('/login',
     const comparisonResult =await bcrypt.compare(req.body.password,user.password);
     if(!comparisonResult){
       const success = false;
-       return res.status(400).json({ success,error: "Please Enter Valid Credentials" })
+       return res.status(400).json({ success,error: "Please Enter Valid Password." })
     }
     const payLoad = {
       user:{
